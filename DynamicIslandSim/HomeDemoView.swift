@@ -6,6 +6,7 @@ import Combine
 struct HomeDemoView: View {
     @StateObject private var model = IslandModel()
     @State private var autoDemo = false
+    @State private var lockScreenOn = false
 
     private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let demoTimer = Timer.publish(every: 2.6, on: .main, in: .common).autoconnect()
@@ -24,7 +25,12 @@ struct HomeDemoView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .onReceive(clock) { _ in model.tick() }
+        .onReceive(clock) { _ in
+            model.tick()
+            if lockScreenOn && Int(model.elapsed) % 5 == 0 {
+                LiveActivityManager.shared.update(model)
+            }
+        }
         .onReceive(demoTimer) { _ in
             guard autoDemo else { return }
             withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
@@ -32,6 +38,9 @@ struct HomeDemoView: View {
                 if let idx = all.firstIndex(of: model.content) {
                     model.content = all[(idx + 1) % all.count]
                 }
+            }
+            if lockScreenOn {
+                LiveActivityManager.shared.update(model)
             }
         }
     }
@@ -143,6 +152,22 @@ struct HomeDemoView: View {
                     .tint(.white)
                     .fixedSize()
             }
+
+            Toggle(isOn: Binding(
+                get: { lockScreenOn },
+                set: { on in
+                    lockScreenOn = on
+                    if on {
+                        LiveActivityManager.shared.start(model)
+                    } else {
+                        LiveActivityManager.shared.end()
+                    }
+                }
+            )) {
+                Text("Pilule écran verrouillé (Live Activity)")
+                    .font(.system(size: 13, weight: .medium))
+            }
+            .tint(.white)
         }
         .padding(18)
         .background(
