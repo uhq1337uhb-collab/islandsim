@@ -2,7 +2,7 @@ name: DynamicIslandSim
 options:
   bundleIdPrefix: com.islandsim
   deploymentTarget:
-    iOS: "16.2"
+    iOS: "16.1"
   createIntermediateGroups: true
 targets:
   DynamicIslandSim:
@@ -10,7 +10,6 @@ targets:
     platform: iOS
     sources:
       - path: DynamicIslandSim
-      - path: IslandShared
     dependencies:
       - target: IslandWidget
         embed: true
@@ -22,8 +21,10 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
     settings:
       base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.islandsim.DynamicIslandSim
         TARGETED_DEVICE_FAMILY: "1"
         MARKETING_VERSION: "1.1"
         CURRENT_PROJECT_VERSION: "2"
@@ -34,7 +35,7 @@ targets:
     platform: iOS
     sources:
       - path: IslandWidget
-      - path: IslandShared
+      - path: DynamicIslandSim/Shared
     info:
       path: IslandWidget/Info.plist
       properties:
@@ -43,10 +44,11 @@ targets:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
-        TARGETED_DEVICE_FAMILY: "1"
         PRODUCT_BUNDLE_IDENTIFIER: com.islandsim.DynamicIslandSim.IslandWidget
+        TARGETED_DEVICE_FAMILY: "1"
+        MARKETING_VERSION: "1.1"
+        CURRENT_PROJECT_VERSION: "2"
         SWIFT_VERSION: "5.9"
-        SKIP_INSTALL: YES
 schemes:
   DynamicIslandSim:
     build:
